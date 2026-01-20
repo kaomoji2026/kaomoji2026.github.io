@@ -20,17 +20,18 @@ body{
 #hot-bar{
   overflow:hidden;
   white-space:nowrap;
-  background:#fff;
-  border-radius:10px;
-  padding:10px 0;
-  margin-bottom:16px;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 
 #hot-track{
   display:inline-block;
-  padding-left:100%;
-  animation: marquee 22s linear infinite;
+  white-space:nowrap;
+}
+
+.hot-item{
+  display:inline-block;
+  margin:0 16px;
+  cursor:pointer;
+  white-space:nowrap;
 }
 
 @keyframes marquee{
@@ -180,13 +181,29 @@ function addKaomoji(k,parent){
   };
   parent.appendChild(div);
 }
+  function addHotItem(k){
+  const span = document.createElement("span");
+  span.className = "hot-item";
+  span.textContent = k;
+  span.onclick = ()=>{
+    navigator.clipboard.writeText(k);
+    clickCount[k] = (clickCount[k] || 0) + 1;
+    localStorage.setItem("clickCount", JSON.stringify(clickCount));
+    toast.textContent = "已複製：" + k;
+    toast.classList.add("show");
+    setTimeout(()=>toast.classList.remove("show"),1200);
+  };
+  hotTrack.appendChild(span);
+}
+三、
 
 function updateHot(){
-  hotTrack.innerHTML="";
+  hotTrack.innerHTML = "";
+
   Object.entries(clickCount)
     .sort((a,b)=>b[1]-a[1])
     .slice(0,10)
-    .forEach(([k])=>addKaomoji(k,hotTrack));
+    .forEach(([k]) => addHotItem(k));
 }
 </script>
 
