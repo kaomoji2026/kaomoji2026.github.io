@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>顏文字大全｜可複製顏文字</title>
+  <meta name="description" content="提供各種類型的顏文字，點擊即可複製，適合聊天、社群、留言使用。">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f7f7f7;
+      padding: 20px;
+      line-height: 1.8;
+    }
+    h1 {
+      text-align: center;
+    }
+    .kaomoji {
+      background: #fff;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 20px;
+    }
+    .kaomoji:hover {
+      background: #eaeaea;
+    }
+  </style>
+</head>
+<body>
+
+<h1>顏文字大全</h1>
+<p style="text-align:center;">點擊顏文字即可複製</p>
+
+<div class="kaomoji">(｡･ω･｡)</div>
+<div class="kaomoji">(≧▽≦)</div>
+<div class="kaomoji">(T_T)</div>
+<div class="kaomoji">(╯︵╰,)</div>
+<div class="kaomoji">(*´∀`)~♥</div>
+
+<script>
+  document.querySelectorAll('.kaomoji').forEach(el => {
+    el.addEventListener('click', () => {
+      navigator.clipboard.writeText(el.textContent);
+      alert('已複製：' + el.textContent);
+    });
+  });
+</script>
+
+</body>
+</html>
