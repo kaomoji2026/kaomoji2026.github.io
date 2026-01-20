@@ -2,8 +2,8 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<title>顏文字宇宙｜一鍵複製表情符號</title>
-<meta name="description" content="顏文字宇宙｜收錄各種顏文字，一鍵複製，聊天、留言、社群都適用！">
+<title>顏文字宇宙｜可可愛愛一鍵複製</title>
+<meta name="description" content="顏文字宇宙｜收錄超可愛顏文字，一鍵複製使用，聊天、留言、社群都適合！">
 <meta name="keywords" content="顏文字, kaomoji, 可愛, 哭哭, 生氣, 複製, 聊天, 表情符號">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
@@ -13,11 +13,11 @@ h1 { text-align:center; margin-bottom:10px; }
 .nav-buttons button { margin:0 8px; padding:8px 16px; border:none; border-radius:6px; cursor:pointer; background:#333; color:#fff; font-weight:bold; }
 .nav-buttons button.active { background:#007acc; }
 .nav-buttons button:hover { opacity:0.8; }
-#kaomoji-container { display: flex; flex-wrap: wrap; gap:6px; }
-.kaomoji { background:#fff; padding:6px 10px; margin:0; border-radius:6px; cursor:pointer; text-align:center; font-size:16px; display:inline-flex; align-items:center; justify-content:center; }
+.kaomoji { background:#fff; padding:10px; margin:8px 0; border-radius:6px; cursor:pointer; text-align:center; font-size:20px; }
+.kaomoji:hover { background:#eaeaea; }
 #copy-toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:10px 16px; border-radius:20px; font-size:14px; opacity:0; pointer-events:none; transition:opacity .3s ease; z-index:9999; }
 #copy-toast.show { opacity:1; }
-.sitemap-link { display:block; text-align:center; margin-top:20px; font-size:16px; color:#007acc; text-decoration:underline; cursor:pointer; }
+a.sitemap-link { display:block; text-align:center; margin-top:20px; font-size:18px; color:#007acc; text-decoration:underline; }
 </style>
 </head>
 <body>
@@ -25,94 +25,104 @@ h1 { text-align:center; margin-bottom:10px; }
 <h1>顏文字宇宙</h1>
 <p style="text-align:center;">點擊顏文字即可複製</p>
 
+<!-- 分類按鈕 -->
 <div class="nav-buttons" id="nav-buttons"></div>
+
+<!-- 顯示顏文字區塊 -->
 <div id="kaomoji-container"></div>
 
+<!-- Toast -->
 <div id="copy-toast">已複製</div>
-<div id="sitemap-container"></div>
 
 <script>
-// Google Sheets CSV URL
-const sheetURL = "https://docs.google.com/spreadsheets/d/你的SheetID/gviz/tq?tqx=out:csv&sheet=工作表名稱";
-
+// -------------------- 顯示顏文字的程式 --------------------
 const toast = document.getElementById('copy-toast');
 const navButtons = document.getElementById('nav-buttons');
 const kaomojiContainer = document.getElementById('kaomoji-container');
-const sitemapContainer = document.getElementById('sitemap-container');
+
+// Google Sheets CSV URL (請改成你的)
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQl0v6_nM1lyjhPNz3zjY8hELqL9Dg5z2ZU3F-9EFsPDpih9t8MVHpbA2x6wspDn3fYPyUT_oTnLiTR/pub?gid=0&single=true&output=csv";
 
 let categories = {};
 
-// 讀取 Google Sheets
 fetch(sheetURL)
   .then(res => res.text())
   .then(csvText => {
-    const lines = csvText.split("\n").slice(1);
+    const lines = csvText.split("\n").slice(1); // 忽略標題
     lines.forEach(line => {
-      const [kaomoji, category] = line.split(",");
-      if(!kaomoji || !category) return;
-      const cat = category.trim();
+      const parts = line.split(",");
+      if(parts.length < 2) return;
+      const kaomoji = parts[0].trim();
+      const cat = parts[1].trim();
       if(!categories[cat]) categories[cat] = [];
-      categories[cat].push(kaomoji.trim());
+      categories[cat].push(kaomoji);
     });
 
     // 生成分類按鈕
-    Object.keys(categories).forEach((cat,i)=>{
+    Object.keys(categories).forEach((cat,i) => {
       const btn = document.createElement("button");
       btn.textContent = cat;
       btn.dataset.cat = cat;
-      if(i===0) btn.classList.add("active");
+      if(i===0) btn.classList.add("active"); // 預設第一個分類
       btn.addEventListener("click",()=>showCategory(cat,btn));
       navButtons.appendChild(btn);
     });
 
+    // 顯示第一個分類
     const firstCat = Object.keys(categories)[0];
     if(firstCat) showCategory(firstCat, navButtons.querySelector("button"));
-
-    // 生成 sitemap.xml 下載鏈結
-    generateSitemap();
-  })
-  .catch(err => {
-    console.error("讀取 Google Sheets CSV 失敗：", err);
   });
 
-// 顯示分類
-function showCategory(cat, btn) {
+function showCategory(cat, btn){
   kaomojiContainer.innerHTML = "";
   document.querySelectorAll(".nav-buttons button").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
 
   categories[cat].forEach(k=>{
     const div = document.createElement("div");
-    div.className="kaomoji";
-    div.textContent=k;
-    div.title=`${cat} 顏文字 ${k}`;
-    div.addEventListener("click", ()=>{
-      navigator.clipboard.writeText(div.textContent);
-      toast.textContent='已複製：'+div.textContent;
+    div.className = "kaomoji";
+    div.textContent = k;
+    div.title = `${cat} 顏文字 ${k}`;
+    div.addEventListener("click",()=>{
+      navigator.clipboard.writeText(k);
+      toast.textContent = '已複製：' + k;
       toast.classList.add("show");
       setTimeout(()=>toast.classList.remove("show"),1500);
     });
     kaomojiContainer.appendChild(div);
   });
 }
-/*
-// 生成 sitemap
-function generateSitemap(){
-  let sitemap=`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">\n\n`;
-  sitemap+=`  <url>\n    <loc>https://kaomoji2026.github.io/</loc>\n    <priority>1.0</priority>\n    <changefreq>weekly</changefreq>\n  </url>\n\n`;
-  Object.keys(categories).forEach(cat=>{
-    sitemap+=`  <url>\n    <loc>https://kaomoji2026.github.io/?category=${encodeURIComponent(cat)}</loc>\n    <priority>0.8</priority>\n    <changefreq>weekly</changefreq>\n  </url>\n\n`;
-  });
-  sitemap+=`</urlset>`;
 
-  const blob = new Blob([sitemap],{type:"application/xml"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download="sitemap.xml";
-  a.textContent="下載最新 sitemap.xml";
-  a.className="sitemap-link";
-  sitemapContainer.appendChild(a);
-}
+// -------------------- 自動生成 sitemap 的程式 --------------------
+  /*
+fetch(sheetURL)
+  .then(res => res.text())
+  .then(csvText => {
+    const lines = csvText.split("\n").slice(1);
+    const categoriesSet = new Set();
+    lines.forEach(line=>{
+      const parts = line.split(",");
+      if(parts.length<2) return;
+      const cat = parts[1].trim();
+      categoriesSet.add(cat);
+    });
+
+    let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">\n\n`;
+    sitemap += `  <url>\n    <loc>https://kaomoji2026.github.io/</loc>\n    <priority>1.0</priority>\n    <changefreq>weekly</changefreq>\n  </url>\n\n`;
+
+    categoriesSet.forEach(cat=>{
+      sitemap += `  <url>\n    <loc>https://kaomoji2026.github.io/?category=${encodeURIComponent(cat)}</loc>\n    <priority>0.8</priority>\n    <changefreq>weekly</changefreq>\n  </url>\n\n`;
+    });
+    sitemap += `</urlset>`;
+
+    const blob = new Blob([sitemap], {type:"application/xml"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "sitemap.xml";
+    a.textContent = "下載最新 sitemap.xml";
+    a.className = "sitemap-link";
+    document.body.appendChild(a);
+  });
   */
 </script>
 
