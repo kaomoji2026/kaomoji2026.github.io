@@ -72,6 +72,21 @@ h1 {
   transform: scale(1.1);
 }
 
+  /* ---------------- 響應式字型 ---------------- */
+
+/* 平板螢幕：寬度 481px ~ 768px */
+@media (max-width: 768px) and (min-width: 481px) {
+  .kaomoji {
+    font-size: 1.3rem;
+  }
+}
+
+/* 手機螢幕：寬度 <= 480px */
+@media (max-width: 480px) {
+  .kaomoji {
+    font-size: 1.1rem;
+  }
+}
 
 /* Toast */
 #copy-toast { 
