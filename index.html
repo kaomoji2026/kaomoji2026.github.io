@@ -8,18 +8,20 @@
 
 <style>
 :root{
-  --btn-color:#81d4a7;       /* 分類按鈕基底淺綠 */
-  --btn-hover:#5ebd8a;       /* 按鈕滑過色 */
-  --kaomoji-bg:#e0f2f1;      /* 顏文字卡片背景 */
-  --toast-bg:#4db6ac;        /* Toast 提示背景 */
-  --hot-color:#388e3c;       /* 熱門跑馬燈顏色 */
+  --btn-color: #b2f2bb;   /* 一般按鈕淺綠 */
+  --btn-hover: #81e6a0;   /* 滑過按鈕中綠 */
+  --btn-active: #4db6ac;  /* 點選按鈕深綠 */
+  --kaomoji-bg: #e0f2f1;  /* 顏文字卡片背景 */
+  --toast-bg: #4db6ac;    /* Toast 提示背景 */
+  --hot-color: #388e3c;   /* 熱門跑馬燈顏色 */
 }
+
 body{
   font-family: "Comic Sans MS", "Arial", sans-serif;
   max-width:720px;
   margin:auto;
   padding:16px;
-  background:#f0fff4;        /* 全站背景淡綠色 */
+  background:#f0fff4;  /* 全站背景淡綠色 */
   line-height:1.7;
 }
 
@@ -32,17 +34,14 @@ body{
   padding:8px 0;
   margin-bottom:12px;
 }
-
 #hot-track{
   display:inline-block;
   white-space:nowrap;
   animation: marquee 22s linear infinite;
 }
-
 #hot-bar:hover #hot-track{
   animation-play-state: paused;
 }
-
 .hot-item{
   display:inline-block;
   margin:0 18px;
@@ -53,6 +52,7 @@ body{
   font-weight:bold;
 }
 
+/* 跑馬燈動畫 */
 @keyframes marquee{
   from{ transform:translateX(0); }
   to{ transform:translateX(-50%); }
@@ -62,13 +62,13 @@ body{
 h1{
   text-align:center;
   margin:6px 0 2px;
-  color:#1f8062;            /* 標題深綠 */
+  color:#1f8062;  /* 標題深綠 */
   font-size:2.2em;
 }
 p{
   text-align:center;
   margin-top:0;
-   color:#1f8062;            /* 副標題綠色 */
+  color:#1f8062;  /* 副標題綠色 */
 }
 
 /* ===== 分類按鈕 ===== */
@@ -81,7 +81,7 @@ p{
   padding:10px 18px;
   border:none;
   border-radius:999px;
-  background:var(--btn-color);
+  background: var(--btn-color);
   color:#fff;
   cursor:pointer;
   font-size:14px;
@@ -89,22 +89,21 @@ p{
   transition:0.3s;
 }
 .nav-buttons button:hover{
-  background:var(--btn-hover);
+  background: var(--btn-hover);
   transform:scale(1.1);
 }
 .nav-buttons button.active{
-  background:#4db6ac;
-  box-shadow:0 4px 12px rgba(255,51,153,0.4);
+  background: var(--btn-active);
+  box-shadow:0 4px 12px rgba(77,182,172,0.4);
 }
 
-/* ===== 顏文字 ===== */
+/* ===== 顏文字卡片 ===== */
 #kaomoji-container{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
   justify-content:center;
 }
-
 .kaomoji{
   background:var(--kaomoji-bg);
   padding:12px 18px;
@@ -112,15 +111,15 @@ p{
   cursor:pointer;
   font-size:clamp(15px,4vw,20px);
   white-space:nowrap;
-  box-shadow:0 2px 8px rgba(255,102,170,.25);
+  box-shadow:0 2px 8px rgba(77,182,172,.25);
   transition:transform .15s ease, box-shadow .15s ease;
 }
 .kaomoji:hover{
   transform:scale(1.1);
-  box-shadow:0 6px 18px rgba(255,102,170,.35);
+  box-shadow:0 6px 18px rgba(77,182,172,.35);
 }
-  
-/* ===== Toast ===== */
+
+/* ===== Toast 提示 ===== */
 #copy-toast{
   position:fixed;
   bottom:28px;
@@ -137,27 +136,16 @@ p{
 }
 #copy-toast.show{ opacity:1; }
 
+/* ===== 點擊動畫 ===== */
 @keyframes popGlow{
-  0%{
-    transform:scale(1);
-    text-shadow:none;
-  }
-  50%{
-    transform:scale(1.25);
-    text-shadow:0 0 12px rgba(255,140,0,.9);
-  }
-  100%{
-    transform:scale(1);
-    text-shadow:none;
-  }
+  0%{ transform:scale(1); text-shadow:none; }
+  50%{ transform:scale(1.25); text-shadow:0 0 12px rgba(77,182,172,.9); }
+  100%{ transform:scale(1); text-shadow:none; }
 }
-
 .hot-item.animate{
   animation: popGlow .45s ease;
 }
-  
 </style>
-  
 </head>
 
 <body>
@@ -233,24 +221,19 @@ function addKaomoji(k,parent){
   };
   parent.appendChild(div);
 }
- function addHotItem(k, index, isClone=false){
+
+function addHotItem(k, index, isClone=false){
   const span = document.createElement("span");
   span.className = "hot-item";
-
-  if(index < 3 && !isClone){
-    span.textContent = "🔥 " + k;
-    span.classList.add("top-hot");
-  }else{
-    span.textContent = k;
-  }
+  span.textContent = (index<3 && !isClone ? "🔥 " : "") + k;
   span.onclick = ()=>{
-  span.classList.remove("animate");
-  void span.offsetWidth; // 強制重繪
-  span.classList.add("animate");
-  navigator.clipboard.writeText(k);
-    clickCount[k] = (clickCount[k] || 0) + 1;
-    localStorage.setItem("clickCount", JSON.stringify(clickCount));
-    toast.textContent = "已複製：" + k;
+    span.classList.remove("animate");
+    void span.offsetWidth;
+    span.classList.add("animate");
+    navigator.clipboard.writeText(k);
+    clickCount[k]=(clickCount[k]||0)+1;
+    localStorage.setItem("clickCount",JSON.stringify(clickCount));
+    toast.textContent="已複製："+k;
     toast.classList.add("show");
     setTimeout(()=>toast.classList.remove("show"),1200);
   };
@@ -258,17 +241,13 @@ function addKaomoji(k,parent){
 }
 
 function updateHot(){
-  hotTrack.innerHTML = "";
-  
- const hotList = Object.entries(clickCount)
+  hotTrack.innerHTML="";
+  const hotList = Object.entries(clickCount)
     .sort((a,b)=>b[1]-a[1])
     .slice(0,10)
     .map(([k])=>k);
 
-  // 第一輪
   hotList.forEach((k,i)=>addHotItem(k,i));
-
-  // 第二輪（複製一份，做無縫）
   hotList.forEach((k,i)=>addHotItem(k,i,true));
 }
 </script>
