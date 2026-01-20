@@ -1,18 +1,18 @@
-<style>
-:root{
-  --btn-color:#ff99cc;
-  --btn-hover:#ff66aa;
-  --kaomoji-bg:#fff0f5;
-  --toast-bg:#ff99cc;
-  --hot-color:#ff6666;
-}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>顏文字宇宙｜可可愛愛一鍵複製</title>
+<meta name="description" content="顏文字宇宙｜收錄超可愛顏文字，一鍵複製使用">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<style>
 body{
-  font-family: "Comic Sans MS", "Arial", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   max-width:720px;
   margin:auto;
   padding:16px;
-  background:#fff0f5;
+  background:#f7f7f7;
   line-height:1.7;
 }
 
@@ -20,10 +20,6 @@ body{
 #hot-bar{
   overflow:hidden;
   white-space:nowrap;
-  border-radius:12px;
-  background:#ffe6f0;
-  padding:8px 0;
-  margin-bottom:12px;
 }
 
 #hot-track{
@@ -32,7 +28,7 @@ body{
   animation: marquee 22s linear infinite;
 }
 
-#hot-bar:hover #hot-track{
+  #hot-bar:hover #hot-track{
   animation-play-state: paused;
 }
 
@@ -42,22 +38,16 @@ body{
   cursor:pointer;
   white-space:nowrap;
   font-size:clamp(16px,4vw,22px);
-  color:var(--hot-color);
-  font-weight:bold;
+}
+
+@keyframes marquee{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(-50%); }
 }
 
 /* ===== 標題 ===== */
-h1{
-  text-align:center;
-  margin:6px 0 2px;
-  color:#ff66aa;
-  font-size:2.2em;
-}
-p{
-  text-align:center;
-  margin-top:0;
-  color:#ff3399;
-}
+h1{ text-align:center; margin:6px 0 2px; }
+p{ text-align:center; margin-top:0; }
 
 /* ===== 分類按鈕 ===== */
 .nav-buttons{
@@ -66,24 +56,15 @@ p{
 }
 .nav-buttons button{
   margin:6px;
-  padding:10px 18px;
+  padding:8px 14px;
   border:none;
   border-radius:999px;
-  background:var(--btn-color);
+  background:#333;
   color:#fff;
   cursor:pointer;
   font-size:14px;
-  font-weight:bold;
-  transition:0.3s;
 }
-.nav-buttons button:hover{
-  background:var(--btn-hover);
-  transform:scale(1.1);
-}
-.nav-buttons button.active{
-  background:#ff3399;
-  box-shadow:0 4px 12px rgba(255,51,153,0.4);
-}
+.nav-buttons button.active{ background:#007acc; }
 
 /* ===== 顏文字 ===== */
 #kaomoji-container{
@@ -94,18 +75,18 @@ p{
 }
 
 .kaomoji{
-  background:var(--kaomoji-bg);
-  padding:12px 18px;
-  border-radius:18px;
+  background:#fff;
+  padding:10px 14px;
+  border-radius:10px;
   cursor:pointer;
   font-size:clamp(15px,4vw,20px);
   white-space:nowrap;
-  box-shadow:0 2px 8px rgba(255,102,170,.25);
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
   transition:transform .15s ease, box-shadow .15s ease;
 }
 .kaomoji:hover{
-  transform:scale(1.1);
-  box-shadow:0 6px 18px rgba(255,102,170,.35);
+  transform:scale(1.05);
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
 }
 
 /* ===== Toast ===== */
@@ -114,18 +95,17 @@ p{
   bottom:28px;
   left:50%;
   transform:translateX(-50%);
-  background:var(--toast-bg);
+  background:#333;
   color:#fff;
   padding:10px 18px;
   border-radius:999px;
   opacity:0;
   transition:.3s;
   pointer-events:none;
-  font-weight:bold;
 }
 #copy-toast.show{ opacity:1; }
 
-@keyframes popGlow{
+  @keyframes popGlow{
   0%{
     transform:scale(1);
     text-shadow:none;
@@ -143,4 +123,123 @@ p{
 .hot-item.animate{
   animation: popGlow .45s ease;
 }
+  
 </style>
+  
+</head>
+
+<body>
+
+<!-- 🔥 熱門跑馬燈 -->
+<div id="hot-bar">
+  <div id="hot-track"></div>
+</div>
+
+<h1>顏文字宇宙</h1>
+<p>點擊顏文字即可複製</p>
+
+<div class="nav-buttons" id="nav-buttons"></div>
+<div id="kaomoji-container"></div>
+<div id="copy-toast">已複製</div>
+
+<script>
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQl0v6_nM1lyjhPNz3zjY8hELqL9Dg5z2ZU3F-9EFsPDpih9t8MVHpbA2x6wspDn3fYPyUT_oTnLiTR/pub?gid=0&single=true&output=csv";
+
+const navButtons = document.getElementById("nav-buttons");
+const container = document.getElementById("kaomoji-container");
+const toast = document.getElementById("copy-toast");
+const hotTrack = document.getElementById("hot-track");
+
+let categories = {};
+let clickCount = JSON.parse(localStorage.getItem("clickCount") || "{}");
+
+fetch(sheetURL)
+.then(res=>res.text())
+.then(csv=>{
+  csv.split("\n").slice(1).forEach(line=>{
+    const [k,cat] = line.split(",");
+    if(!k||!cat) return;
+    categories[cat.trim()] ??= [];
+    categories[cat.trim()].push(k.trim());
+  });
+
+  buildNav();
+  showCategory(Object.keys(categories)[0]);
+  updateHot();
+});
+
+function buildNav(){
+  Object.keys(categories).forEach((cat,i)=>{
+    const btn = document.createElement("button");
+    btn.textContent = cat;
+    if(i===0) btn.classList.add("active");
+    btn.onclick = ()=>showCategory(cat,btn);
+    navButtons.appendChild(btn);
+  });
+}
+
+function showCategory(cat,btn){
+  container.innerHTML="";
+  document.querySelectorAll(".nav-buttons button").forEach(b=>b.classList.remove("active"));
+  btn?.classList.add("active");
+
+  categories[cat].forEach(k=>addKaomoji(k,container));
+}
+
+function addKaomoji(k,parent){
+  const div=document.createElement("div");
+  div.className="kaomoji";
+  div.textContent=k;
+  div.onclick=()=>{
+    navigator.clipboard.writeText(k);
+    clickCount[k]=(clickCount[k]||0)+1;
+    localStorage.setItem("clickCount",JSON.stringify(clickCount));
+    toast.textContent="已複製："+k;
+    toast.classList.add("show");
+    setTimeout(()=>toast.classList.remove("show"),1200);
+    updateHot();
+  };
+  parent.appendChild(div);
+}
+ function addHotItem(k, index, isClone=false){
+  const span = document.createElement("span");
+  span.className = "hot-item";
+
+  if(index < 3 && !isClone){
+    span.textContent = "🔥 " + k;
+    span.classList.add("top-hot");
+  }else{
+    span.textContent = k;
+  }
+  span.onclick = ()=>{
+  span.classList.remove("animate");
+  void span.offsetWidth; // 強制重繪
+  span.classList.add("animate");
+  navigator.clipboard.writeText(k);
+    clickCount[k] = (clickCount[k] || 0) + 1;
+    localStorage.setItem("clickCount", JSON.stringify(clickCount));
+    toast.textContent = "已複製：" + k;
+    toast.classList.add("show");
+    setTimeout(()=>toast.classList.remove("show"),1200);
+  };
+  hotTrack.appendChild(span);
+}
+
+function updateHot(){
+  hotTrack.innerHTML = "";
+  
+ const hotList = Object.entries(clickCount)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,10)
+    .map(([k])=>k);
+
+  // 第一輪
+  hotList.forEach((k,i)=>addHotItem(k,i));
+
+  // 第二輪（複製一份，做無縫）
+  hotList.forEach((k,i)=>addHotItem(k,i,true));
+}
+</script>
+
+</body>
+</html>
