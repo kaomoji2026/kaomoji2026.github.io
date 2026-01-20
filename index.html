@@ -2,8 +2,10 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>顏文字世界｜可可愛愛一鍵複製</title>
-  <meta name="description" content="收錄各種類型顏文字，可愛、哭哭、生氣通通有，點擊即可複製使用。">
+  <title>顏文字宇宙｜可可愛愛一鍵複製</title>
+  <meta name="description" content="收錄各種類型顏文字：可愛、哭哭、生氣，點擊即可一鍵複製，方便聊天、留言、社群使用。">
+  <meta name="keywords" content="顏文字, kaomoji, 可愛, 哭哭, 生氣, 複製, 聊天, 表情符號">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -15,11 +17,17 @@
     }
     h1 {
       text-align: center;
+      margin-bottom: 10px;
     }
     h2 {
       margin-top: 40px;
       border-left: 6px solid #333;
       padding-left: 10px;
+    }
+    p.category-desc {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 10px;
     }
     .kaomoji {
       background: #fff;
@@ -33,48 +41,52 @@
     .kaomoji:hover {
       background: #eaeaea;
     }
-  #copy-toast {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 9999;
-}
-#copy-toast.show {
-  opacity: 1;
-}
-
+    /* Toast 提示框 */
+    #copy-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 9999;
+    }
+    #copy-toast.show {
+      opacity: 1;
+    }
   </style>
 </head>
-<div id="copy-toast">已複製</div>
+<body>
 
-  <body>
-
-<h1>顏文字世界</h1>
+<h1>顏文字宇宙</h1>
 <p style="text-align:center;">點擊顏文字即可複製</p>
 
 <h2>😊 可愛顏文字</h2>
-<div class="kaomoji">(｡･ω･｡)</div>
-<div class="kaomoji">(≧▽≦)</div>
-<div class="kaomoji">(*´∀`)~♥</div>
+<p class="category-desc">這裡收集了最受歡迎的可愛顏文字，聊天、留言都適用。</p>
+<div class="kaomoji" title="可愛顏文字 (｡･ω･｡)">(｡･ω･｡)</div>
+<div class="kaomoji" title="可愛顏文字 (≧▽≦)">(≧▽≦)</div>
+<div class="kaomoji" title="可愛顏文字 (*´∀`)~♥">(*´∀`)~♥</div>
 
 <h2>😢 哭哭顏文字</h2>
-<div class="kaomoji">(T_T)</div>
-<div class="kaomoji">(；＿；)</div>
-<div class="kaomoji">(｡•́︿•̀｡)</div>
+<p class="category-desc">適合表達悲傷、哭泣的心情。</p>
+<div class="kaomoji" title="哭哭顏文字 (T_T)">(T_T)</div>
+<div class="kaomoji" title="哭哭顏文字 (；＿；)">(；＿；)</div>
+<div class="kaomoji" title="哭哭顏文字 (｡•́︿•̀｡)">(｡•́︿•̀｡)</div>
 
 <h2>😠 生氣顏文字</h2>
-<div class="kaomoji">(╯︵╰,)</div>
-<div class="kaomoji">(｀Д´)</div>
-<div class="kaomoji">(＃｀皿´)</div>
+<p class="category-desc">用來表達生氣、憤怒的情緒。</p>
+<div class="kaomoji" title="生氣顏文字 (╯︵╰,)">(╯︵╰,)</div>
+<div class="kaomoji" title="生氣顏文字 (｀Д´)">(｀Д´)</div>
+<div class="kaomoji" title="生氣顏文字 (＃｀皿´)">(＃｀皿´)</div>
+
+<!-- Toast 提示框 -->
+<div id="copy-toast">已複製</div>
 
 <script>
   const toast = document.getElementById('copy-toast');
@@ -92,8 +104,6 @@
     });
   });
 </script>
-
-<div id="copy-toast">已複製</div>
 
 </body>
 </html>
