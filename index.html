@@ -1,98 +1,98 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <title>顏文字宇宙｜可可愛愛一鍵複製</title>
-  <meta name="description" content="顏文字宇宙｜收錄超可愛顏文字，一鍵複製使用，聊天、留言、社群都適合！">
-  <meta name="keywords" content="顏文字, kaomoji, 可愛, 哭哭, 生氣, 複製, 聊天, 表情符號">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 720px; margin: auto; padding: 20px; background:#f7f7f7; line-height:1.8; }
-    h1 { text-align: center; margin-bottom: 10px; }
-    h2 { margin-top:40px; border-left:6px solid #333; padding-left:10px; }
-    p.category-desc { font-size:14px; color:#555; margin-bottom:10px; }
-    .kaomoji { background:#fff; padding:10px; margin:8px 0; border-radius:6px; cursor:pointer; text-align:center; font-size:20px; }
-    .kaomoji:hover { background:#eaeaea; }
-    #copy-toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:10px 16px; border-radius:20px; font-size:14px; opacity:0; pointer-events:none; transition:opacity .3s ease; z-index:9999; }
-    #copy-toast.show { opacity:1; }
-    .nav-links { text-align:center; margin-bottom:20px; }
-    .nav-links a { margin:0 8px; text-decoration:none; color:#333; font-weight:bold; }
-    .nav-links a:hover { color:#007acc; }
-  </style>
+<meta charset="UTF-8">
+<title>顏文字宇宙｜一鍵複製表情符號</title>
+<meta name="description" content="顏文字宇宙｜收錄各種顏文字，一鍵複製，聊天、留言、社群都適用！">
+<meta name="keywords" content="顏文字, kaomoji, 可愛, 哭哭, 生氣, 複製, 聊天, 表情符號">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: system-ui, sans-serif; max-width: 720px; margin:auto; padding:20px; background:#f7f7f7; line-height:1.8; }
+h1 { text-align:center; margin-bottom:10px; }
+.nav-buttons { text-align:center; margin-bottom:20px; }
+.nav-buttons button { margin:0 8px; padding:8px 16px; border:none; border-radius:6px; cursor:pointer; background:#333; color:#fff; font-weight:bold; }
+.nav-buttons button.active { background:#007acc; }
+.nav-buttons button:hover { opacity:0.8; }
+.kaomoji { background:#fff; padding:10px; margin:8px 0; border-radius:6px; cursor:pointer; text-align:center; font-size:20px; }
+.kaomoji:hover { background:#eaeaea; }
+#copy-toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:10px 16px; border-radius:20px; font-size:14px; opacity:0; pointer-events:none; transition:opacity .3s ease; z-index:9999; }
+#copy-toast.show { opacity:1; }
+</style>
 </head>
 <body>
 
 <h1>顏文字宇宙</h1>
 <p style="text-align:center;">點擊顏文字即可複製</p>
 
-<!-- 分類導覽列 -->
-<div class="nav-links" id="nav-links"></div>
+<!-- 分類按鈕 -->
+<div class="nav-buttons" id="nav-buttons"></div>
 
-<!-- 分類容器 -->
-<div id="categories-container"></div>
+<!-- 顯示顏文字區塊 -->
+<div id="kaomoji-container"></div>
 
-<!-- Toast 提示框 -->
+<!-- Toast -->
 <div id="copy-toast">已複製</div>
 
 <script>
 const toast = document.getElementById('copy-toast');
+const navButtons = document.getElementById('nav-buttons');
+const kaomojiContainer = document.getElementById('kaomoji-container');
 
 // Google Sheets CSV URL (改成你的)
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQl0v6_nM1lyjhPNz3zjY8hELqL9Dg5z2ZU3F-9EFsPDpih9t8MVHpbA2x6wspDn3fYPyUT_oTnLiTR/pub?gid=0&single=true&output=csv";
 
-// 讀取 CSV 並自動生成分類 + 顏文字
+// 儲存所有分類資料
+let categories = {};
+
+// 讀取 CSV
 fetch(sheetURL)
   .then(res => res.text())
   .then(csvText => {
-    const lines = csvText.split("\n").slice(1); // 忽略標題
-    const categories = {}; // 儲存分類資料
-
+    const lines = csvText.split("\n").slice(1);
     lines.forEach(line => {
       const [kaomoji, category] = line.split(",");
-      if (!kaomoji || !category) return;
-
+      if(!kaomoji || !category) return;
       const cat = category.trim();
-      if (!categories[cat]) categories[cat] = [];
+      if(!categories[cat]) categories[cat] = [];
       categories[cat].push(kaomoji.trim());
     });
 
-    const navLinks = document.getElementById("nav-links");
-    const container = document.getElementById("categories-container");
-
-    Object.keys(categories).forEach(cat => {
-      // 分類導覽列
-      const a = document.createElement("a");
-      a.href = `#${cat}`;
-      a.textContent = cat;
-      navLinks.appendChild(a);
-
-      // 分類區塊
-      const h2 = document.createElement("h2");
-      h2.id = cat;
-      h2.textContent = cat;
-      container.appendChild(h2);
-
-      const divContainer = document.createElement("div");
-      divContainer.id = cat + "-container";
-      container.appendChild(divContainer);
-
-      categories[cat].forEach(kaomoji => {
-        const div = document.createElement("div");
-        div.className = "kaomoji";
-        div.textContent = kaomoji;
-        div.title = `${cat} 顏文字 ${kaomoji}`;
-
-        div.addEventListener("click", () => {
-          navigator.clipboard.writeText(div.textContent);
-          toast.textContent = '已複製：' + div.textContent;
-          toast.classList.add("show");
-          setTimeout(()=>toast.classList.remove("show"),1500);
-        });
-
-        divContainer.appendChild(div);
-      });
+    // 生成分類按鈕
+    Object.keys(categories).forEach((cat, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = cat;
+      btn.dataset.cat = cat;
+      if(i===0) btn.classList.add("active"); // 預設第一個分類
+      btn.addEventListener("click", () => showCategory(cat, btn));
+      navButtons.appendChild(btn);
     });
+
+    // 顯示預設分類
+    const firstCat = Object.keys(categories)[0];
+    if(firstCat) showCategory(firstCat, navButtons.querySelector("button"));
   });
+
+// 顯示分類函式
+function showCategory(cat, btn) {
+  kaomojiContainer.innerHTML = "";
+  // 切換 active
+  document.querySelectorAll(".nav-buttons button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+
+  categories[cat].forEach(k => {
+    const div = document.createElement("div");
+    div.className = "kaomoji";
+    div.textContent = k;
+    div.title = `${cat} 顏文字 ${k}`;
+    div.addEventListener("click", () => {
+      navigator.clipboard.writeText(div.textContent);
+      toast.textContent = '已複製：' + div.textContent;
+      toast.classList.add("show");
+      setTimeout(()=>toast.classList.remove("show"),1500);
+    });
+    kaomojiContainer.appendChild(div);
+  });
+}
 </script>
 
 </body>
