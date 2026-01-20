@@ -42,7 +42,7 @@ body{
 
 @keyframes marquee{
   from{ transform:translateX(0); }
-  to{ transform:translateX(-100%); }
+  to{ transform:translateX(-50%); }
 }
 
 /* ===== 標題 ===== */
@@ -104,7 +104,28 @@ p{ text-align:center; margin-top:0; }
   pointer-events:none;
 }
 #copy-toast.show{ opacity:1; }
+
+  @keyframes popGlow{
+  0%{
+    transform:scale(1);
+    text-shadow:none;
+  }
+  50%{
+    transform:scale(1.25);
+    text-shadow:0 0 12px rgba(255,140,0,.9);
+  }
+  100%{
+    transform:scale(1);
+    text-shadow:none;
+  }
+}
+
+.hot-item.animate{
+  animation: popGlow .45s ease;
+}
+  
 </style>
+  
 </head>
 
 <body>
@@ -180,12 +201,21 @@ function addKaomoji(k,parent){
   };
   parent.appendChild(div);
 }
-  function addHotItem(k){
+ function addHotItem(k, index, isClone=false){
   const span = document.createElement("span");
   span.className = "hot-item";
-  span.textContent = k;
+
+  if(index < 3 && !isClone){
+    span.textContent = "🔥 " + k;
+    span.classList.add("top-hot");
+  }else{
+    span.textContent = k;
+  }
   span.onclick = ()=>{
-    navigator.clipboard.writeText(k);
+  span.classList.remove("animate");
+  void span.offsetWidth; // 強制重繪
+  span.classList.add("animate");
+  navigator.clipboard.writeText(k);
     clickCount[k] = (clickCount[k] || 0) + 1;
     localStorage.setItem("clickCount", JSON.stringify(clickCount));
     toast.textContent = "已複製：" + k;
@@ -197,11 +227,17 @@ function addKaomoji(k,parent){
 
 function updateHot(){
   hotTrack.innerHTML = "";
-
-  Object.entries(clickCount)
+  
+ const hotList = Object.entries(clickCount)
     .sort((a,b)=>b[1]-a[1])
     .slice(0,10)
-    .forEach(([k]) => addHotItem(k));
+    .map(([k])=>k);
+
+  // 第一輪
+  hotList.forEach((k,i)=>addHotItem(k,i));
+
+  // 第二輪（複製一份，做無縫）
+  hotList.forEach((k,i)=>addHotItem(k,i,true));
 }
 </script>
 
