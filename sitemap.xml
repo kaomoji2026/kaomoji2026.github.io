@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
 
+  <!-- 首頁 -->
   <url>
     <loc>https://kaomoji2026.github.io/</loc>
     <priority>1.0</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+
+  <!-- 分類頁面 -->
+  <url>
+    <loc>https://kaomoji2026.github.io/?category=cute</loc>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://kaomoji2026.github.io/?category=cry</loc>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://kaomoji2026.github.io/?category=angry</loc>
+    <priority>0.8</priority>
     <changefreq>weekly</changefreq>
   </url>
 
