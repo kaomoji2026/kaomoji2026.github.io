@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- 首頁，包含所有分類 -->
+  <!-- 首頁 -->
   <url>
     <loc>https://kaomoji2026.github.io/</loc>
     <priority>1.0</priority>
     <changefreq>weekly</changefreq>
-    <news:keywords>顏文字, 可愛, 哭哭, 生氣, 複製, 聊天, 表情符號</news:keywords>
   </url>
 
 </urlset>
