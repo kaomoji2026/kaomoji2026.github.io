@@ -21,18 +21,23 @@ h1 {
   margin-bottom:10px; 
 }
 
-.nav-buttons { 
-  text-align:center; 
-  margin-bottom:20px; 
+/* 分類按鈕 */
+.nav-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
-.nav-buttons {
-  text-align:center;
-  margin-bottom:20px;
-  display: flex;          /* 改用 flex 排列按鈕 */
-  flex-wrap: wrap;        /* 螢幕小時自動換行 */
-  justify-content: center;
-  gap: 8px;               /* 按鈕間距 */
+.nav-buttons button { 
+  padding:8px 16px; 
+  border:none; 
+  border-radius:6px; 
+  cursor:pointer; 
+  background:#333; 
+  color:#fff; 
+  font-weight:bold; 
 }
 
 .nav-buttons button.active { 
@@ -66,6 +71,7 @@ h1 {
   transform: scale(1.1);
 }
 
+/* Toast */
 #copy-toast { 
   position:fixed; 
   bottom:30px; 
@@ -133,10 +139,10 @@ fetch(sheetURL)
       if(!categories[cat]) categories[cat] = [];
       categories[cat].push(kaomoji);
     });
-    
- // ✅ 在這裡檢查 categories 是否有資料
+
+    // ✅ 在這裡檢查 categories 是否有資料
     console.log(categories);
-    
+
     // 生成分類按鈕
     Object.keys(categories).forEach((cat,i) => {
       const btn = document.createElement("button");
