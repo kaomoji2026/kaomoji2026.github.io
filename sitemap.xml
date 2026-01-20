@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- 首頁 -->
+  <url>
+    <loc>https://kaomoji2026.github.io/</loc>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- 可愛分類 -->
+  <url>
+    <loc>https://kaomoji2026.github.io/#cute</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 哭哭分類 -->
+  <url>
+    <loc>https://kaomoji2026.github.io/#cry</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 生氣分類 -->
+  <url>
+    <loc>https://kaomoji2026.github.io/#angry</loc>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>
