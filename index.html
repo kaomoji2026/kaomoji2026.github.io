@@ -26,21 +26,10 @@
 <p style="text-align:center;">點擊顏文字即可複製</p>
 
 <!-- 分類導覽列 -->
-<div class="nav-links">
-  <a href="#cute">可愛</a> |
-  <a href="#cry">哭哭</a> |
-  <a href="#angry">生氣</a>
-</div>
+<div class="nav-links" id="nav-links"></div>
 
 <!-- 分類容器 -->
-<h2 id="cute">😊 可愛顏文字</h2>
-<div id="cute-container"></div>
-
-<h2 id="cry">😢 哭哭顏文字</h2>
-<div id="cry-container"></div>
-
-<h2 id="angry">😠 生氣顏文字</h2>
-<div id="angry-container"></div>
+<div id="categories-container"></div>
 
 <!-- Toast 提示框 -->
 <div id="copy-toast">已複製</div>
@@ -51,31 +40,57 @@ const toast = document.getElementById('copy-toast');
 // Google Sheets CSV URL (改成你的)
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQl0v6_nM1lyjhPNz3zjY8hELqL9Dg5z2ZU3F-9EFsPDpih9t8MVHpbA2x6wspDn3fYPyUT_oTnLiTR/pub?gid=0&single=true&output=csv";
 
-// 讀取 CSV
+// 讀取 CSV 並自動生成分類 + 顏文字
 fetch(sheetURL)
   .then(res => res.text())
   .then(csvText => {
     const lines = csvText.split("\n").slice(1); // 忽略標題
+    const categories = {}; // 儲存分類資料
+
     lines.forEach(line => {
       const [kaomoji, category] = line.split(",");
       if (!kaomoji || !category) return;
 
-      const div = document.createElement("div");
-      div.className = "kaomoji";
-      div.textContent = kaomoji.trim();
-      div.title = `${category} 顏文字 ${kaomoji.trim()}`;
+      const cat = category.trim();
+      if (!categories[cat]) categories[cat] = [];
+      categories[cat].push(kaomoji.trim());
+    });
 
-      // 複製功能
-      div.addEventListener("click", () => {
-        navigator.clipboard.writeText(div.textContent);
-        toast.textContent = '已複製：' + div.textContent;
-        toast.classList.add("show");
-        setTimeout(()=>toast.classList.remove("show"),1500);
+    const navLinks = document.getElementById("nav-links");
+    const container = document.getElementById("categories-container");
+
+    Object.keys(categories).forEach(cat => {
+      // 分類導覽列
+      const a = document.createElement("a");
+      a.href = `#${cat}`;
+      a.textContent = cat;
+      navLinks.appendChild(a);
+
+      // 分類區塊
+      const h2 = document.createElement("h2");
+      h2.id = cat;
+      h2.textContent = cat;
+      container.appendChild(h2);
+
+      const divContainer = document.createElement("div");
+      divContainer.id = cat + "-container";
+      container.appendChild(divContainer);
+
+      categories[cat].forEach(kaomoji => {
+        const div = document.createElement("div");
+        div.className = "kaomoji";
+        div.textContent = kaomoji;
+        div.title = `${cat} 顏文字 ${kaomoji}`;
+
+        div.addEventListener("click", () => {
+          navigator.clipboard.writeText(div.textContent);
+          toast.textContent = '已複製：' + div.textContent;
+          toast.classList.add("show");
+          setTimeout(()=>toast.classList.remove("show"),1500);
+        });
+
+        divContainer.appendChild(div);
       });
-
-      // 放到對應分類容器
-      const container = document.getElementById(category.trim() + "-container");
-      if(container) container.appendChild(div);
     });
   });
 </script>
