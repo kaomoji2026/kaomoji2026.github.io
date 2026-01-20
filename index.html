@@ -3,208 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <title>顏文字宇宙｜可可愛愛一鍵複製</title>
+<meta name="description" content="顏文字宇宙｜收錄超可愛顏文字，一鍵複製使用">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body { 
-  font-family: system-ui, sans-serif; 
-  max-width: 720px; 
-  margin:auto; 
-  padding:20px; 
-  background:#f7f7f7; 
-  line-height:1.8; 
+body{
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  max-width:720px;
+  margin:auto;
+  padding:16px;
+  background:#f7f7f7;
+  line-height:1.7;
 }
 
-h1 { text-align:center; margin-bottom:10px; }
-
-/* 搜尋框 */
-#searchInput {
-  width:100%; 
-  padding:8px; 
-  margin-bottom:10px; 
-  font-size:1rem;
-  border-radius:6px;
-  border:1px solid #ccc;
-}
-
-/* 分類按鈕 */
-.nav-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.nav-buttons button { 
-  padding:8px 16px; 
-  border:none; 
-  border-radius:6px; 
-  cursor:pointer; 
-  background:#333; 
-  color:#fff; 
-  font-weight:bold; 
-}
-
-.nav-buttons button.active { background:#007acc; }
-.nav-buttons button:hover { opacity:0.8; }
-
-/* 顏文字容器 */
-#kaomoji-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.kaomoji {
+/* ===== 熱門跑馬燈 ===== */
+#hot-bar{
+  overflow:hidden;
+  white-space:nowrap;
   background:#fff;
-  padding:8px 10px;
-  border-radius:6px;
+  border-radius:10px;
+  padding:10px 0;
+  margin-bottom:16px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+
+#hot-track{
+  display:inline-block;
+  padding-left:100%;
+  animation: marquee 22s linear infinite;
+}
+
+@keyframes marquee{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(-100%); }
+}
+
+.hot-item{
+  display:inline-block;
+  margin:0 18px;
   cursor:pointer;
+  font-size:clamp(16px,4vw,22px);
+}
+
+/* ===== 標題 ===== */
+h1{ text-align:center; margin:6px 0 2px; }
+p{ text-align:center; margin-top:0; }
+
+/* ===== 分類按鈕 ===== */
+.nav-buttons{
   text-align:center;
-  font-size:1.3rem;
-  white-space: nowrap;
-  transition: transform 0.2s, background 0.2s;
+  margin:18px 0;
+}
+.nav-buttons button{
+  margin:6px;
+  padding:8px 14px;
+  border:none;
+  border-radius:999px;
+  background:#333;
+  color:#fff;
+  cursor:pointer;
+  font-size:14px;
+}
+.nav-buttons button.active{ background:#007acc; }
+
+/* ===== 顏文字 ===== */
+#kaomoji-container{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
 }
 
-.kaomoji:hover {
-  background:#eaeaea;
-  transform: scale(1.1);
+.kaomoji{
+  background:#fff;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:clamp(15px,4vw,20px);
+  white-space:nowrap;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.kaomoji:hover{
+  transform:scale(1.05);
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
 }
 
-/* 響應式字型 */
-@media (max-width: 768px) and (min-width: 481px) { .kaomoji { font-size:1.1rem; } }
-@media (max-width: 480px) { .kaomoji { font-size:0.9rem; } }
-
-/* Toast 動畫 */
-#copy-toast {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%) scale(0.7);
-  background: #333;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 9999;
+/* ===== Toast ===== */
+#copy-toast{
+  position:fixed;
+  bottom:28px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#333;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:999px;
+  opacity:0;
+  transition:.3s;
+  pointer-events:none;
 }
-
-#copy-toast.show {
-  opacity: 1;
-  transform: translateX(-50%) scale(1);
-}
+#copy-toast.show{ opacity:1; }
 </style>
 </head>
+
 <body>
 
+<!-- 🔥 熱門跑馬燈 -->
+<div id="hot-bar">
+  <div id="hot-track"></div>
+</div>
+
 <h1>顏文字宇宙</h1>
-<p style="text-align:center;">點擊顏文字即可複製</p>
+<p>點擊顏文字即可複製</p>
 
-<!-- 搜尋框 -->
-<input type="text" id="searchInput" placeholder="搜尋顏文字...">
-
-<!-- 分類按鈕 -->
 <div class="nav-buttons" id="nav-buttons"></div>
-
-<!-- 排序選單 -->
-<select id="sortSelect" style="margin-bottom:10px; padding:6px; font-size:1rem; width:100%;">
-  <option value="最新">最新</option>
-  <option value="熱門">熱門</option>
-  <option value="隨機">隨機</option>
-</select>
-
-<!-- 顯示顏文字區塊 -->
 <div id="kaomoji-container"></div>
-
-<!-- Toast -->
 <div id="copy-toast">已複製</div>
 
 <script>
-// -------------------- 顯示顏文字 --------------------
-const toast = document.getElementById('copy-toast');
-const navButtons = document.getElementById('nav-buttons');
-const kaomojiContainer = document.getElementById('kaomoji-container');
-const searchInput = document.getElementById('searchInput');
-const sortSelect = document.getElementById('sortSelect');
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQl0v6_nM1lyjhPNz3zjY8hELqL9Dg5z2ZU3F-9EFsPDpih9t8MVHpbA2x6wspDn3fYPyUT_oTnLiTR/pub?gid=0&single=true&output=csv";
+
+const navButtons = document.getElementById("nav-buttons");
+const container = document.getElementById("kaomoji-container");
+const toast = document.getElementById("copy-toast");
+const hotTrack = document.getElementById("hot-track");
 
 let categories = {};
-let clickCount = {}; // 熱門計數
-let sortMode = "最新";
+let clickCount = JSON.parse(localStorage.getItem("clickCount") || "{}");
 
-// 測試資料（可改成 Google Sheets）
-categories = {
-  "可愛": ["(*^_^*)","(*≧ω≦*)","(｡♥‿♥｡)","(*´∀`*)"],
-  "生氣": ["(╯°□°）╯︵ ┻━┻","ಠ_ಠ","(；￣Д￣)"],
-  "哭哭": ["(╥﹏╥)","｡：ﾟ(｡ﾉω＼｡)ﾟ･｡","(;´༎ຶД༎ຶ`)"]
-};
+fetch(sheetURL)
+.then(res=>res.text())
+.then(csv=>{
+  csv.split("\n").slice(1).forEach(line=>{
+    const [k,cat] = line.split(",");
+    if(!k||!cat) return;
+    categories[cat.trim()] ??= [];
+    categories[cat.trim()].push(k.trim());
+  });
 
-// 顯示分類按鈕
-Object.keys(categories).forEach((cat,i)=>{
-  const btn = document.createElement("button");
-  btn.textContent = cat;
-  btn.dataset.cat = cat;
-  if(i===0) btn.classList.add("active");
-  btn.addEventListener("click",()=>showCategory(cat,btn));
-  navButtons.appendChild(btn);
+  buildNav();
+  showCategory(Object.keys(categories)[0]);
+  updateHot();
 });
 
-// -------------------- 顯示顏文字 --------------------
-function showCategory(cat, btn){
-  kaomojiContainer.innerHTML = "";
-  document.querySelectorAll(".nav-buttons button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-
-  let kaomojiList = [...categories[cat]];
-
-  // 排序
-  if(sortMode === "隨機"){
-    kaomojiList.sort(()=>Math.random()-0.5);
-  } else if(sortMode === "熱門"){
-    kaomojiList.sort((a,b)=>(clickCount[b]||0)-(clickCount[a]||0));
-  }
-
-  // 搜尋過濾
-  const keyword = searchInput.value.trim();
-  if(keyword) kaomojiList = kaomojiList.filter(k=>k.includes(keyword));
-
-  kaomojiList.forEach(k=>{
-    const div = document.createElement("div");
-    div.className = "kaomoji";
-    div.textContent = k;
-    div.title = `${cat} 顏文字 ${k}`;
-    div.addEventListener("click", ()=>{
-      navigator.clipboard.writeText(k);
-      toast.textContent = '已複製：' + k;
-      toast.classList.add("show");
-      setTimeout(()=>toast.classList.remove("show"),1500);
-
-      // 熱門計數
-      clickCount[k] = (clickCount[k]||0)+1;
-    });
-    kaomojiContainer.appendChild(div);
+function buildNav(){
+  Object.keys(categories).forEach((cat,i)=>{
+    const btn = document.createElement("button");
+    btn.textContent = cat;
+    if(i===0) btn.classList.add("active");
+    btn.onclick = ()=>showCategory(cat,btn);
+    navButtons.appendChild(btn);
   });
 }
 
-// -------------------- 搜尋框事件 --------------------
-searchInput.addEventListener("input", ()=>{
-  const activeCatBtn = document.querySelector(".nav-buttons button.active");
-  if(activeCatBtn) showCategory(activeCatBtn.dataset.cat, activeCatBtn);
-});
+function showCategory(cat,btn){
+  container.innerHTML="";
+  document.querySelectorAll(".nav-buttons button").forEach(b=>b.classList.remove("active"));
+  btn?.classList.add("active");
 
-// -------------------- 排序選單事件 --------------------
-sortSelect.addEventListener("change", ()=>{
-  sortMode = sortSelect.value;
-  const activeCatBtn = document.querySelector(".nav-buttons button.active");
-  if(activeCatBtn) showCategory(activeCatBtn.dataset.cat, activeCatBtn);
-});
+  categories[cat].forEach(k=>addKaomoji(k,container));
+}
 
-// -------------------- 預設顯示第一個分類 --------------------
-const firstCatBtn = document.querySelector(".nav-buttons button");
-if(firstCatBtn) showCategory(firstCatBtn.dataset.cat, firstCatBtn);
+function addKaomoji(k,parent){
+  const div=document.createElement("div");
+  div.className="kaomoji";
+  div.textContent=k;
+  div.onclick=()=>{
+    navigator.clipboard.writeText(k);
+    clickCount[k]=(clickCount[k]||0)+1;
+    localStorage.setItem("clickCount",JSON.stringify(clickCount));
+    toast.textContent="已複製："+k;
+    toast.classList.add("show");
+    setTimeout(()=>toast.classList.remove("show"),1200);
+    updateHot();
+  };
+  parent.appendChild(div);
+}
+
+function updateHot(){
+  hotTrack.innerHTML="";
+  Object.entries(clickCount)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,10)
+    .forEach(([k])=>addKaomoji(k,hotTrack));
+}
 </script>
 
 </body>
