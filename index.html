@@ -33,6 +33,25 @@
     .kaomoji:hover {
       background: #eaeaea;
     }
+  #copy-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+#copy-toast.show {
+  opacity: 1;
+}
+
   </style>
 </head>
 <body>
@@ -56,13 +75,23 @@
 <div class="kaomoji">(＃｀皿´)</div>
 
 <script>
+  const toast = document.getElementById('copy-toast');
+
   document.querySelectorAll('.kaomoji').forEach(el => {
     el.addEventListener('click', () => {
       navigator.clipboard.writeText(el.textContent);
-      alert('已複製：' + el.textContent);
+
+      toast.textContent = '已複製：' + el.textContent;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1500);
     });
   });
 </script>
+
+<div id="copy-toast">已複製</div>
 
 </body>
 </html>
