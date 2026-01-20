@@ -1,18 +1,19 @@
 // ====== 自動生成 sitemap.js ======
 
-// Google Sheets CSV URL (請改成你的)
+// Google Sheets CSV URL（請貼你的完整連結）
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQl0v6_nM1lyjhPNz3zjY8hELqL9Dg5z2ZU3F-9EFsPDpih9t8MVHpbA2x6wspDn3fYPyUT_oTnLiTR/pub?gid=0&single=true&output=csv";
 
 // 讀取 CSV 並生成 sitemap.xml
 fetch(sheetURL)
   .then(res => res.text())
   .then(csvText => {
-    const lines = csvText.split("\n").slice(1); // 忽略標題
+    const lines = csvText.split("\n").slice(1);
     const categoriesSet = new Set();
 
     // 收集所有分類
     lines.forEach(line => {
-      const [kaomoji, category] = line.split(",");
+      const parts = line.split(",");
+      const category = parts[1];
       if (!category) return;
       categoriesSet.add(category.trim());
     });
@@ -29,9 +30,6 @@ fetch(sheetURL)
     });
 
     sitemap += `</urlset>`;
-
-    // 顯示 sitemap XML
-    console.log(sitemap);
 
     // ====== 生成下載鏈結 ======
     const blob = new Blob([sitemap], {type: "application/xml"});
